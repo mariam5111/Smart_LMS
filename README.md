@@ -8,9 +8,9 @@ A robust, secure, and scalable RESTful backend API for managing online learning 
 
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
+- [Project Structure](project-structure)
 - [Installation](#-installation)
-- [Environment Variables](#-environment-variables)
+- [Environment Variables](environment-variables)
 - [Running the App](#-running-the-app)
 - [Authentication](#-authentication)
 - [User Roles](#-user-roles)
@@ -18,7 +18,6 @@ A robust, secure, and scalable RESTful backend API for managing online learning 
 - [Advanced Backend Features](#-advanced-backend-features)
 - [Testing](#-testing)
 - [Database Setup](#-database-setup)
-- [Deployment](#-deployment)
 
 ---
 
