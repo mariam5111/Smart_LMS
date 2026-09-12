@@ -138,7 +138,7 @@ Smart_LMS/
 │   ├── lessonProgress.model.js
 │   ├── review.model.js
 │   ├── submission.model.js
-│   └── user.model.js
+│   └── User.model.js
 ├── routes/
 │   ├── assignment.routes.js
 │   ├── course.routes.js
@@ -196,7 +196,7 @@ Smart_LMS/
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/mariam5111/Smart_LMS.git
-   cd lms-api
+   cd Smart_LMS
    ```
 
 2. **Install dependencies:**
