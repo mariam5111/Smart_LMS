@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://smart-lms-api.onrender.com/api',
+        url: 'https://smart-lms-production.up.railway.app/api-docs',
       },
     ],
     components: {
