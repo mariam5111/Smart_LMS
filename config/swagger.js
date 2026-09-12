@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000/api',
+        url: 'https://smart-lms-api.onrender.com/api',
       },
     ],
     components: {
