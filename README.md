@@ -1,6 +1,6 @@
 # 🎓 LMS API — Smart Learning Management System
 
-A robust, secure, and scalable RESTful backend API for managing online learning programs — students, instructors, courses, lessons, assignments, and learning progress. Built with **Node.js**, **Express.js**, and **MongoDB**, following professional backend architecture with clean separation of concerns, centralized error handling, role-based access control, and an advanced **Learning Progress Engine**.
+A robust, secure, and scalable RESTful backend API for managing online learning programs — students, instructors, courses, lessons, assignments, submissions, reviews, and learning progress. Built with **Node.js**, **Express.js**, and **MongoDB**, following professional backend architecture with clean separation of concerns, centralized error handling, role-based access control, and an advanced **Learning Progress Engine**.
 
 ---
 
@@ -15,8 +15,7 @@ A robust, secure, and scalable RESTful backend API for managing online learning 
 - [Authentication](#-authentication)
 - [User Roles](#-user-roles)
 - [API Endpoints](#-api-endpoints)
-- [Advanced Backend Feature: Progress Engine](#-advanced-backend-feature-progress-engine)
-- [Aggregation & Dashboards](#-aggregation--dashboards)
+- [Advanced Backend Features](#-advanced-backend-features)
 - [Testing](#-testing)
 - [Database Setup](#-database-setup)
 - [Deployment](#-deployment)
@@ -60,6 +59,18 @@ A robust, secure, and scalable RESTful backend API for managing online learning 
   - Auto-updates enrollment status to `completed` at 100%
   - Provides detailed breakdown: remaining lessons, remaining assignments
 
+- **⭐ Reviews & Ratings**
+  - Students can review courses only after completing them
+  - One review per student per course (enforced by a unique index)
+  - Automatic recalculation of the course's `ratingAverage` on create/update/delete via Aggregation Pipeline
+  - Admins can delete any abusive review
+  - Public endpoint to browse all reviews of a course
+
+- **👨‍🏫 Instructor Profiles**
+  - Extended profile fields: `bio`, `expertise`, `yearsOfExperience`
+  - Instructors update their own profile via `PATCH /api/users/profile`
+  - Public endpoint `GET /api/users/instructors/:id` returns the profile + their published courses
+
 - **📈 Aggregation & Dashboards**
   - Admin dashboard: users by role, courses by status, top courses, avg progress per category
   - Instructor dashboard: total courses, total students, top students by avg score, per-course progress
@@ -73,10 +84,10 @@ A robust, secure, and scalable RESTful backend API for managing online learning 
   - Proper HTTP status codes (400, 401, 403, 404, 409, 500)
 
 - **⚡ Performance**
-  - MongoDB Indexes on frequently queried fields (`email`, `course`, `student`, `category`, `status`, `deadline`, `lesson+order`, etc.)
+  - MongoDB Indexes on frequently queried fields (`email`, `course`, `student`, `category`, `status`, `deadline`, `lesson+order`, `student+course` on reviews, etc.)
   - Atomic operations for enrollment counters (`$inc`)
   - `$text` search indexes for courses
-  - `.lean()`-friendly query patterns
+  - Unique indexes to prevent duplicates
 
 ---
 
@@ -105,6 +116,7 @@ lms-api/
 │ ├── enrollment.controller.js
 │ ├── lesson.controller.js
 │ ├── progress.controller.js
+│ ├── review.controller.js
 │ ├── submission.controller.js
 │ └── user.controller.js
 ├── middleware/
@@ -120,6 +132,7 @@ lms-api/
 │ ├── enrollment.model.js
 │ ├── lesson.model.js
 │ ├── lessonProgress.model.js
+│ ├── review.model.js
 │ ├── submission.model.js
 │ └── user.model.js
 ├── routes/
@@ -130,6 +143,8 @@ lms-api/
 │ ├── enrollment.routes.js
 │ ├── lesson.routes.js
 │ ├── progress.routes.js
+│ ├── review.routes.js
+│ ├── reviewStandalone.routes.js
 │ ├── submission.routes.js
 │ └── user.routes.js
 ├── services/
@@ -139,6 +154,7 @@ lms-api/
 │ ├── enrollment.service.js
 │ ├── lesson.service.js
 │ ├── progress.service.js
+│ ├── review.service.js
 │ ├── submission.service.js
 │ └── user.service.js
 ├── utils/
@@ -150,6 +166,7 @@ lms-api/
 │ ├── enrollment.validator.js
 │ ├── lesson.validator.js
 │ ├── progress.validator.js
+│ ├── review.validator.js
 │ ├── submission.validator.js
 │ └── user.validator.js
 ├── .env.example
@@ -254,9 +271,9 @@ json
 { "role": "Instructor" }
 👥 User Roles
 Role	Permissions
-Student	Browse courses, enroll, view lessons, submit assignments, view own progress, view own dashboard
-Instructor	Everything Student can do + create/manage own courses, lessons, assignments, grade submissions, view own dashboard
-Admin	Full access to everything, view all dashboards, promote users (via DB), delete any resource
+Student	Browse courses, enroll, view lessons, submit assignments, review completed courses, view own progress and dashboard
+Instructor	Everything Student can do + create/manage own courses, lessons, assignments, grade submissions, update own profile (bio, expertise, experience), view own dashboard
+Admin	Full access to everything, view all dashboards, delete any review or resource, promote users via DB
 📡 API Endpoints
 Base URL: http://localhost:5000/api
 
@@ -266,6 +283,8 @@ POST	/users/register	Register as Student	Public
 POST	/users/login	Login & get tokens	Public
 POST	/users/refresh	Refresh access token	Public
 GET	/users/profile	Get current user profile	Authenticated
+PATCH	/users/profile	Update current user profile (name, bio, expertise, yearsOfExperience)	Authenticated
+GET	/users/instructors/:id	Get instructor public profile with published courses	Public
 📚 Courses
 Method	Endpoint	Description	Access
 GET	/courses	List all published courses (search, filter, pagination)	Public
@@ -305,33 +324,36 @@ Method	Endpoint	Description	Access
 POST	/progress/lessons/complete	Mark lesson as completed	Student (enrolled)
 POST	/progress/lessons/uncomplete	Mark lesson as not completed	Student (enrolled)
 GET	/progress/enrollments/:enrollmentId	Detailed progress for an enrollment	Owner / Instructor / Admin
+⭐ Reviews
+Method	Endpoint	Description	Access
+GET	/courses/:courseId/reviews	List all reviews for a course (with avg rating)	Public
+POST	/courses/:courseId/reviews	Create a review	Student (enrolled + completed)
+GET	/reviews/:id	Get single review by ID	Public
+PUT	/reviews/:id	Update own review	Review Owner
+DELETE	/reviews/:id	Delete review	Owner / Admin
 📈 Dashboard
 Method	Endpoint	Description	Access
 GET	/dashboard/admin	Admin aggregated stats	Admin
 GET	/dashboard/instructor	Instructor aggregated stats	Instructor / Admin
 GET	/dashboard/student	Student aggregated stats	Student
-🧠 Advanced Backend Feature: Progress Engine
-The Learning Progress Engine is the core business logic that distinguishes this project from a simple CRUD API.
-
-How it works
+🧠 Advanced Backend Features
+1. Learning Progress Engine
 For each enrollment, progress is calculated as:
 
 text
 progressPercentage = (completedLessons + gradedSubmissions) / (totalLessons + totalAssignments) × 100
-Rules
-A lesson counts as completed when the student marks it via /progress/lessons/complete.
+Rules:
+
+A lesson counts when the student marks it via /progress/lessons/complete.
 
 An assignment counts when the instructor grades the student's submission.
 
 When progressPercentage reaches 100%, the enrollment status is automatically set to completed.
 
-Progress is recalculated automatically after:
+Progress is recalculated automatically after marking/unmarking a lesson or grading a submission.
 
-Marking / unmarking a lesson
+Example Response:
 
-Grading a submission
-
-Example Response
 json
 {
   "success": true,
@@ -352,37 +374,14 @@ json
     }
   }
 }
-📊 Aggregation & Dashboards
-All dashboards use MongoDB Aggregation Pipelines to compute statistics server-side (not on the client).
+2. Reviews Rating Engine
+The ratingAverage of each course is recalculated automatically after any review is created, updated, or deleted — using a MongoDB Aggregation Pipeline ($group + $avg) instead of manual math.
 
-Admin Dashboard (/dashboard/admin)
-Users grouped by role
+3. Aggregation Dashboards
+All dashboards use MongoDB Aggregation Pipelines to compute statistics server-side.
 
-Courses grouped by status
+Example — Top Courses:
 
-Total enrollments & submissions
-
-Top 5 courses by enrollment count
-
-Average progress per category
-
-Instructor Dashboard (/dashboard/instructor)
-Total courses, students, assignments, submissions
-
-Per-course average progress & completions
-
-Top 5 students by average score across instructor's courses
-
-Student Dashboard (/dashboard/student)
-Total enrollments, completed, active, dropped
-
-Average progress
-
-Total submissions & average score
-
-Per-course progress breakdown
-
-Example: Top Courses Aggregation
 js
 Course.aggregate([
   { $sort: { enrollmentCount: -1 } },
@@ -400,7 +399,7 @@ Course.aggregate([
 ]);
 🧪 Testing
 Option 1: Swagger UI (Recommended)
-Open http://localhost:5000/api-docs
+Open http://localhost:5000/api-docs.
 
 Click Authorize and paste your access token.
 
@@ -417,13 +416,18 @@ Collection Variables include:
 
 baseUrl — defaults to http://localhost:5000/api
 
-token — auto-saved after login
+token — auto-saved after student login
 
-refreshToken — auto-saved after login
+refreshToken — auto-saved after student login
 
-courseId, lessonId, enrollmentId, assignmentId, submissionId — auto-saved after creating resources
+instructorToken, instructorId — auto-saved after instructor login
 
-Use the chained requests in order: Users → Courses → Lessons → Enrollments → Assignments → Submissions → Progress → Dashboard.
+adminToken — auto-saved after admin login
+
+courseId, lessonId, enrollmentId, assignmentId, submissionId, reviewId — auto-saved after creating resources
+
+Use the chained requests in order:
+Users → Courses → Lessons → Enrollments → Assignments → Submissions → Progress → Reviews → Dashboard.
 
 Promoting users for testing:
 
@@ -438,7 +442,7 @@ Re-login to get a token reflecting the new role.
 🗄️ Database Setup
 Database name: lms_db (or anything you choose in MONGO_URI)
 
-Collections: users, courses, lessons, enrollments, assignments, submissions, lessonprogresses
+Collections: users, courses, lessons, enrollments, assignments, submissions, lessonprogresses, reviews
 
 Indexes:
 
@@ -450,6 +454,7 @@ enrollments	student + course (unique)
 assignments	course
 submissions	student + assignment (unique), assignment
 lessonprogresses	student + lesson (unique), student + course
+reviews	student + course (unique), course
 🚢 Deployment
 Recommended Platforms
 Backend: Render, Railway, or Fly.io
@@ -482,4 +487,3 @@ This project is open-source and available under the MIT License.
 Mariam Shahat Hamada
 
 GitHub: @mariam5111
-
