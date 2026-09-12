@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       enum: ['Student', 'Instructor', 'Admin'],
       default: 'Student',
     },
-     bio: {
+    bio: {
       type: String,
       default: '',
       maxlength: [500, 'Bio cannot exceed 500 characters'],

@@ -144,9 +144,9 @@ const updateSubmission = async (submissionId, content, user) => {
   if (!submission) {
     throw new AppError('Submission not found', 404);
   }
-if (!content) {
-  throw new AppError('Submission content is required', 400);
-}
+  if (!content) {
+    throw new AppError('Submission content is required', 400);
+  }
   if (submission.student.toString() !== user._id.toString()) {
     throw new AppError('You can only update your own submission', 403);
   }

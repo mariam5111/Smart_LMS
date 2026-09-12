@@ -26,7 +26,7 @@ const enrollInCourse = async (studentId, courseId) => {
     course: courseId,
   });
 
-  // Increment enrollment count atomically
+  
   await Course.findByIdAndUpdate(courseId, {
     $inc: { enrollmentCount: 1 },
   });
@@ -45,7 +45,7 @@ const getMyEnrollments = async (studentId) => {
   return enrollments;
 };
 
-const getEnrollmentById = async (enrollmentId, user) => {
+const getEnrollmentById = async (enrollmentId, _user) => {
   const enrollment = await Enrollment.findById(enrollmentId)
     .populate({
       path: 'course',
@@ -90,7 +90,7 @@ const dropCourse = async (enrollmentId, studentId) => {
   enrollment.status = 'dropped';
   await enrollment.save();
 
-  // Decrement enrollment count
+  
   await Course.findByIdAndUpdate(enrollment.course, {
     $inc: { enrollmentCount: -1 },
   });

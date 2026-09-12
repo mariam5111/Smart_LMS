@@ -4,12 +4,9 @@ const User = require('../models/User.model');
 const Enrollment = require('../models/enrollment.model');
 const Submission = require('../models/submission.model');
 const Assignment = require('../models/assignment.model');
-const Lesson = require('../models/lesson.model');
-const AppError = require('../utils/appError');
 
-/**
- * ============= ADMIN DASHBOARD =============
- */
+
+
 const getAdminOverview = async () => {
   const [usersByRole, totalCourses, coursesByStatus, totalEnrollments, totalSubmissions] =
     await Promise.all([
@@ -41,9 +38,7 @@ const getAdminOverview = async () => {
   };
 };
 
-/**
- * Top 5 courses by enrollment count (with instructor info).
- */
+
 const getTopCourses = async (limit = 5) => {
   const courses = await Course.aggregate([
     { $sort: { enrollmentCount: -1 } },
@@ -73,9 +68,7 @@ const getTopCourses = async (limit = 5) => {
   return courses;
 };
 
-/**
- * Average progress across all enrollments per category.
- */
+
 const getAvgProgressByCategory = async () => {
   const result = await Enrollment.aggregate([
     {
@@ -108,22 +101,10 @@ const getAvgProgressByCategory = async () => {
   return result;
 };
 
-/**
- * ============= INSTRUCTOR DASHBOARD =============
- */
-
-/**
- * Stats for a specific instructor:
- * - total courses created
- * - total students enrolled across their courses
- * - total assignments created
- * - total submissions received
- * - avg progress per course
- */
 const getInstructorOverview = async (instructorId) => {
   const instructorObjectId = new mongoose.Types.ObjectId(instructorId);
 
-  // Get all courses created by instructor
+ 
   const courses = await Course.find({ instructor: instructorObjectId }).select(
     '_id title'
   );
@@ -200,9 +181,7 @@ const getInstructorOverview = async (instructorId) => {
   };
 };
 
-/**
- * Top students for an instructor's courses (by avg score).
- */
+
 const getTopStudentsByInstructor = async (instructorId, limit = 5) => {
   const instructorObjectId = new mongoose.Types.ObjectId(instructorId);
 
@@ -211,7 +190,7 @@ const getTopStudentsByInstructor = async (instructorId, limit = 5) => {
   );
 
   const result = await Submission.aggregate([
-    // only graded submissions
+   
     { $match: { status: 'graded', score: { $ne: null } } },
     {
       $lookup: {
@@ -256,18 +235,6 @@ const getTopStudentsByInstructor = async (instructorId, limit = 5) => {
   return result;
 };
 
-/**
- * ============= STUDENT DASHBOARD =============
- */
-
-/**
- * Student summary:
- * - total courses enrolled
- * - completed courses
- * - in-progress courses
- * - avg progress
- * - total submissions & avg score
- */
 const getStudentOverview = async (studentId) => {
   const studentObjectId = new mongoose.Types.ObjectId(studentId);
 
@@ -340,9 +307,7 @@ const getStudentOverview = async (studentId) => {
   };
 };
 
-/**
- * Detailed list of student's courses with progress.
- */
+
 const getStudentCoursesProgress = async (studentId) => {
   const studentObjectId = new mongoose.Types.ObjectId(studentId);
 

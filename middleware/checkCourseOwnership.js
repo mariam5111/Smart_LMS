@@ -3,8 +3,8 @@ const AppError = require('../utils/appError');
 
 const checkCourseOwnership = async (req, res, next) => {
   try {
-   const courseId = req.params.courseId || req.params.id;
-   const course = await Course.findById(courseId);
+    const courseId = req.params.courseId || req.params.id;
+    const course = await Course.findById(courseId);
     if (!course) {
       return next(new AppError('Course not found', 404));
     }
