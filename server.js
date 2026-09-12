@@ -1,6 +1,9 @@
 const dotenv = require('dotenv');
 dotenv.config();
+const dns = require('dns');
 
+// ضبط الـ DNS لاستخدام سيرفرات Google المباشرة
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 const connectDB = require('./config/db');
 const app = require('./app');
 
