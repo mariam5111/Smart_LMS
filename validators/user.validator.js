@@ -24,8 +24,15 @@ const loginSchema = Joi.object({
     'string.empty': 'Password is required',
   }),
 });
+const updateProfileSchema = Joi.object({
+  name: Joi.string().trim().min(2).max(50),
+  bio: Joi.string().trim().max(500).allow(''),
+  expertise: Joi.array().items(Joi.string().trim()),
+  yearsOfExperience: Joi.number().integer().min(0).max(70),
+}).min(1);
 
 module.exports = {
   registerValidation: validate(registerSchema),
   loginValidation: validate(loginSchema),
+  updateProfileValidation: validate(updateProfileSchema),
 };

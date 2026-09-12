@@ -1,6 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/user.controller');
-const { registerValidation, loginValidation } = require('../validators/user.validator');
+const { registerValidation, loginValidation, updateProfileValidation} = require('../validators/user.validator');
 const protect = require('../middleware/protect');
 
 const router = express.Router();
@@ -113,5 +113,68 @@ router.post('/refresh', userController.refresh);
  *         description: Not authenticated
  */
 router.get('/profile', protect, userController.getProfile);
+
+/**
+ * @swagger
+ * /users/profile:
+ *   patch:
+ *     summary: Update current user's profile (name, bio, expertise, yearsOfExperience)
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Mariam Shahat"
+ *               bio:
+ *                 type: string
+ *                 example: "Senior developer with 10 years of experience"
+ *               expertise:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["JavaScript", "Node.js", "MongoDB"]
+ *               yearsOfExperience:
+ *                 type: integer
+ *                 example: 10
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: No valid fields to update
+ *       401:
+ *         description: Not authenticated
+ */
+router.patch(
+  '/profile',
+  protect,
+  updateProfileValidation,
+  userController.updateProfile
+);
+
+/**
+ * @swagger
+ * /users/instructors/{id}:
+ *   get:
+ *     summary: Get instructor public profile with their published courses
+ *     tags: [Users]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Instructor profile retrieved
+ *       404:
+ *         description: Instructor not found
+ */
+router.get('/instructors/:id', userController.getInstructorProfile);
+
 
 module.exports = router;

@@ -12,6 +12,8 @@ const assignmentRouter = require('./routes/assignment.routes');
 const submissionRouter = require('./routes/submission.routes');
 const progressRouter = require('./routes/progress.routes');
 const dashboardRouter = require('./routes/dashboard.routes');
+const reviewRouter = require('./routes/review.routes'); 
+const reviewStandaloneRouter = require('./routes/reviewStandalone.routes'); 
 
 const errorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/appError');
@@ -21,21 +23,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Swagger UI
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Routes
+
 app.use('/api/users', userRouter);
 app.use('/api/courses', courseRouter);
 app.use('/api/courses/:courseId/lessons', lessonRouter);
 app.use('/api/courses/:courseId/enrollments', courseEnrollmentRouter);
 app.use('/api/courses/:courseId/assignments', assignmentRouter);
+app.use('/api/courses/:courseId/reviews', reviewRouter); 
 app.use('/api/enrollments', enrollmentRouter);
 app.use('/api/submissions', submissionRouter);
 app.use('/api/progress', progressRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/reviews', reviewStandaloneRouter); 
 
-// 404
+
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

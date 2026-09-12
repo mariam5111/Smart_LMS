@@ -1,0 +1,774 @@
+{
+  "info": {
+    "name": "LMS API",
+    "description": "Smart Learning Management System API — Courses, Lessons, Enrollments, Assignments, Submissions, Progress Engine, and Dashboards. Requests are chained: register/login auto-save tokens, creating a course auto-saves courseId, and so on.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "instructorToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "courseId", "value": "" },
+    { "key": "lessonId", "value": "" },
+    { "key": "enrollmentId", "value": "" },
+    { "key": "assignmentId", "value": "" },
+    { "key": "submissionId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register Student",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student One\",\n  \"email\": \"student@test.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "register"]
+            },
+            "description": "Registers a user as Student by default."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@test.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Instructor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('instructorToken', res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"instructor@test.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "login"]
+            },
+            "description": "Requires the account's role to be Instructor in DB."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('adminToken', res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Access Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "profile"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "Get All Courses (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses?search=&category=&status=published&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses"],
+              "query": [
+                { "key": "search", "value": "" },
+                { "key": "category", "value": "" },
+                { "key": "status", "value": "published" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Course By ID (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Course (Instructor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('courseId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{instructorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"JavaScript Basics\",\n  \"description\": \"Learn JavaScript from scratch\",\n  \"category\": \"Programming\",\n  \"price\": 0,\n  \"status\": \"published\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses"]
+            },
+            "description": "Auto-saves courseId."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Course (Instructor)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{instructorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"JavaScript Basics - Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Course (Instructor)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{instructorToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Lessons",
+      "item": [
+        {
+          "name": "Get Lessons By Course",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "lessons"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Lesson (Instructor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('lessonId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{instructorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Lesson 1: Variables\",\n  \"content\": \"Introduction to variables\",\n  \"order\": 1,\n  \"duration\": 15\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "lessons"]
+            },
+            "description": "Auto-saves lessonId."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Lesson (Instructor)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{instructorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Lesson 1: Variables & Constants\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/lessons/{{lessonId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "lessons", "{{lessonId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Lesson (Instructor)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{instructorToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/lessons/{{lessonId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "lessons", "{{lessonId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Enrollments",
+      "item": [
+        {
+          "name": "Enroll In Course (Student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('enrollmentId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseId\": \"{{courseId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["enrollments"]
+            },
+            "description": "Auto-saves enrollmentId."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Enrollments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/enrollments/my-enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["enrollments", "my-enrollments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Enrollment By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/enrollments/{{enrollmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["enrollments", "{{enrollmentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Course Enrollments (Instructor)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{instructorToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "enrollments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Drop Enrollment (Student)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/enrollments/{{enrollmentId}}/drop",
+              "host": ["{{baseUrl}}"],
+              "path": ["enrollments", "{{enrollmentId}}", "drop"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Assignments",
+      "item": [
+        {
+          "name": "Get Assignments By Course",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/assignments",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "assignments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Assignment (Instructor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('assignmentId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{instructorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Build a Todo App\",\n  \"description\": \"Create a simple todo app with vanilla JS\",\n  \"deadline\": \"2026-12-31T23:59:59.000Z\",\n  \"maxScore\": 100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/assignments",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "assignments"]
+            },
+            "description": "Auto-saves assignmentId."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Assignment (Instructor)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{instructorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxScore\": 120\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/assignments/{{assignmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "assignments", "{{assignmentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Assignment (Instructor)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{instructorToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/assignments/{{assignmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "assignments", "{{assignmentId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Submissions",
+      "item": [
+        {
+          "name": "Submit Assignment (Student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('submissionId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignmentId\": \"{{assignmentId}}\",\n  \"content\": \"This is my solution to the assignment.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/submissions",
+              "host": ["{{baseUrl}}"],
+              "path": ["submissions"]
+            },
+            "description": "Auto-saves submissionId."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Submissions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/submissions/my-submissions",
+              "host": ["{{baseUrl}}"],
+              "path": ["submissions", "my-submissions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Submissions By Assignment (Instructor)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{instructorToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/submissions/assignment/{{assignmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["submissions", "assignment", "{{assignmentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Submission By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/submissions/{{submissionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["submissions", "{{submissionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Grade Submission (Instructor)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{instructorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"score\": 85\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/submissions/{{submissionId}}/grade",
+              "host": ["{{baseUrl}}"],
+              "path": ["submissions", "{{submissionId}}", "grade"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Submission (Student)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated solution...\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/submissions/{{submissionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["submissions", "{{submissionId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Progress",
+      "item": [
+        {
+          "name": "Mark Lesson Complete (Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lessonId\": \"{{lessonId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/progress/lessons/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "lessons", "complete"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unmark Lesson Complete (Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lessonId\": \"{{lessonId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/progress/lessons/uncomplete",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "lessons", "uncomplete"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Progress For Enrollment",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/progress/enrollments/{{enrollmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "enrollments", "{{enrollmentId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "admin"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Instructor Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{instructorToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/instructor",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "instructor"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Student Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/student",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "student"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

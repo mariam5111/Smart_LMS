@@ -106,6 +106,7 @@ router.post(
 router.put(
   '/:id',
   restrictTo('Instructor', 'Admin'),
+  checkCourseOwnership,
   updateLessonValidation,
   lessonController.updateLesson
 );
@@ -133,6 +134,7 @@ router.put(
 router.delete(
   '/:id',
   restrictTo('Instructor', 'Admin'),
+  checkCourseOwnership,
   lessonController.deleteLesson
 );
 

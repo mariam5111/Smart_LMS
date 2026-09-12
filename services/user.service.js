@@ -66,10 +66,65 @@ const getUserById = async (userId) => {
   }
   return user;
 };
+const updateUserProfile = async (userId, updateData) => {
+  const allowedFields = ['name', 'bio', 'expertise', 'yearsOfExperience'];
+  const filteredData = {};
 
+  Object.keys(updateData).forEach((key) => {
+    if (allowedFields.includes(key)) {
+      filteredData[key] = updateData[key];
+    }
+  });
+
+  if (Object.keys(filteredData).length === 0) {
+    throw new AppError('No valid fields to update', 400);
+  }
+
+  const user = await User.findByIdAndUpdate(userId, filteredData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  return user;
+};
+
+
+const getInstructorProfile = async (instructorId) => {
+  const instructor = await User.findById(instructorId);
+
+  if (!instructor) {
+    throw new AppError('Instructor not found', 404);
+  }
+
+  if (instructor.role !== 'Instructor' && instructor.role !== 'Admin') {
+    throw new AppError('This user is not an instructor', 404);
+  }
+
+  const Course = require('../models/course.model');
+  const courses = await Course.find({
+    instructor: instructorId,
+    status: 'published',
+  }).select('title description category enrollmentCount ratingAverage price');
+
+  return {
+    _id: instructor._id,
+    name: instructor.name,
+    email: instructor.email,
+    bio: instructor.bio,
+    expertise: instructor.expertise,
+    yearsOfExperience: instructor.yearsOfExperience,
+    courses,
+  };
+};
 module.exports = {
   registerUser,
   loginUser,
   refreshAccessToken,
   getUserById,
+  updateUserProfile,
+  getInstructorProfile,
 };
