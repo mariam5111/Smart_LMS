@@ -8,7 +8,21 @@ const router = express.Router({ mergeParams: true });
 
 router.use(protect);
 
-// Get all enrollments for a specific course (instructor/admin only)
+/**
+ * @swagger
+ * /courses/{courseId}/enrollments:
+ *   get:
+ *     summary: Get all enrollments for a course (instructor or admin)
+ *     tags: [Enrollments]
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: List of enrollments }
+ *       403: { description: Forbidden }
+ */
 router.get(
   '/',
   restrictTo('Instructor', 'Admin'),
