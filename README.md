@@ -1,4 +1,4 @@
-# 🎓 LMS API — Smart Learning Management System
+# 🎓 SLMS— Smart Learning Management System
 
 A robust, secure, and scalable RESTful backend API for managing online learning programs — students, instructors, courses, lessons, assignments, submissions, reviews, and learning progress. Built with **Node.js**, **Express.js**, and **MongoDB**, following professional backend architecture with clean separation of concerns, centralized error handling, role-based access control, and an advanced **Learning Progress Engine**.
 
@@ -109,7 +109,7 @@ A robust, secure, and scalable RESTful backend API for managing online learning 
 ## 📁 Project Structure
 
 ```text
-lms-api/
+Smart_LMS/
 ├── config/
 │   ├── db.js
 │   └── swagger.js
@@ -195,7 +195,7 @@ lms-api/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/<your-username>/lms-api.git
+   git clone https://github.com/mariam5111/Smart_LMS.git
    cd lms-api
    ```
 
