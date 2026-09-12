@@ -12,6 +12,11 @@ const submissionSchema = new mongoose.Schema(
       ref: 'Assignment',
       required: true,
     },
+    content: {
+      type: String,
+      required: [true, 'Please provide your submission content'],
+      trim: true,
+    },
     submittedAt: {
       type: Date,
       default: Date.now,
@@ -19,7 +24,7 @@ const submissionSchema = new mongoose.Schema(
     score: {
       type: Number,
       default: null,
-      min: 0,
+      min: [0, 'Score cannot be negative'],
     },
     status: {
       type: String,
@@ -31,6 +36,7 @@ const submissionSchema = new mongoose.Schema(
 );
 
 submissionSchema.index({ student: 1, assignment: 1 }, { unique: true });
+submissionSchema.index({ assignment: 1 });
 
 const Submission = mongoose.model('Submission', submissionSchema);
 module.exports = Submission;

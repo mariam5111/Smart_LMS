@@ -8,6 +8,8 @@ const courseEnrollmentRouter = require('./routes/courseEnrollment.routes');
 const errorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/appError');
 const assignmentRouter = require('./routes/assignment.routes');
+const submissionRouter = require('./routes/submission.routes');
+const progressRouter = require('./routes/progress.routes');
 
 const app = express();
 
@@ -20,6 +22,8 @@ app.use('/api/courses/:courseId/lessons', lessonRouter);
 app.use('/api/courses/:courseId/enrollments', courseEnrollmentRouter);
 app.use('/api/enrollments', enrollmentRouter);
 app.use('/api/courses/:courseId/assignments', assignmentRouter);
+app.use('/api/submissions', submissionRouter);
+app.use('/api/progress', progressRouter);
 
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

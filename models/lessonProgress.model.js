@@ -29,6 +29,7 @@ const lessonProgressSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
 lessonProgressSchema.index({ student: 1, lesson: 1 }, { unique: true });
 lessonProgressSchema.index({ student: 1, course: 1 });
 
