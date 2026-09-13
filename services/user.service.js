@@ -47,8 +47,22 @@ const loginUser = async ({ email, password }) => {
   const refreshToken = generateRefreshToken(user._id);
 
   user.password = undefined;
+ const userData = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    createdAt: user.createdAt,
+  };
 
-  return { user, token, refreshToken };
+
+  if (user.role === 'Instructor') {
+    userData.bio = user.bio;
+    userData.expertise = user.expertise;
+    userData.yearsOfExperience = user.yearsOfExperience;
+  }
+
+  return { user: userData, token, refreshToken };
 };
 
 const refreshAccessToken = async (refreshToken) => {
