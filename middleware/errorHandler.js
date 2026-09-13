@@ -1,6 +1,6 @@
 const AppError = require('../utils/appError');
 
-const errorHandler = (err, req, res) => {
+const errorHandler = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
   error.statusCode = err.statusCode || 500;
