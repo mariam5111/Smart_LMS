@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://smartlms-production-9af4.up.railway.app',
+        url: 'https://smartlms-production-9af4.up.railway.app/api',
       },
     ],
     components: {
