@@ -26,7 +26,7 @@ const registerUser = async (userData) => {
   role: user.role,
   createdAt: user.createdAt,
 };
-
+};
 
 const loginUser = async ({ email, password }) => {
   if (!email || !password) {
