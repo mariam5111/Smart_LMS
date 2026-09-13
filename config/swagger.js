@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000/api',
+        url: 'http://localhost:5000/aphttps://smartlms-production-9af4.up.railway.app/api',
       },
     ],
     components: {
