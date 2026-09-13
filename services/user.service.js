@@ -19,8 +19,14 @@ const registerUser = async (userData) => {
   });
 
   user.password = undefined;
-  return user;
+  return {
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  createdAt: user.createdAt,
 };
+
 
 const loginUser = async ({ email, password }) => {
   if (!email || !password) {
