@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details | Schooly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .brand-logo { font-weight: 800; color: #1e293b; text-decoration: none; font-size: 1.5rem; }
+        .brand-logo span { color: #2563eb; }
+        .lesson-item, .assignment-item { background: white; border: 1px solid #e2e8f0; border-radius: 8px; transition: all 0.2s; }
+        .lesson-completed { background: #f0fdf4; border-color: #22c55e; }
+        .assignment-item { border-left: 4px solid #f59e0b; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand brand-logo" href="courses.html">Schooly<span>.</span></a>
+            <div class="d-flex align-items-center">
+                <a href="dashboard.html" class="btn btn-outline-primary btn-sm me-3">My Dashboard</a>
+                <button class="btn btn-outline-danger btn-sm" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="mainContent"></div>
+
+    <div class="modal fade" id="courseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Edit Course</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <form id="courseForm">
+                    <div class="modal-body">
+                        <div class="mb-3"><label>Title</label><input type="text" class="form-control" id="courseTitle" required></div>
+                        <div class="mb-3"><label>Description</label><textarea class="form-control" id="courseDesc" rows="2" required></textarea></div>
+                        <div class="mb-3"><label>Category</label><input type="text" class="form-control" id="courseCategory" required></div>
+                        <div class="mb-3"><label>Price</label><input type="number" class="form-control" id="coursePrice" required min="0"></div>
+                    </div>
+                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Save Changes</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="lessonModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title" id="lessonModalTitle">Add Lesson</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <form id="lessonForm">
+                    <input type="hidden" id="editLessonId">
+                    <div class="modal-body">
+                        <div class="mb-3"><label>Title</label><input type="text" class="form-control" id="lessonTitle" required></div>
+                        <div class="mb-3"><label>Content</label><textarea class="form-control" id="lessonContent" rows="2" required></textarea></div>
+                        <div class="mb-3"><label>Order</label><input type="number" class="form-control" id="lessonOrder" required min="1"></div>
+                        <div class="mb-3"><label>Duration (mins)</label><input type="number" class="form-control" id="lessonDuration" required min="1"></div>
+                    </div>
+                    <div class="modal-footer"><button type="submit" class="btn btn-success">Save Lesson</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="assignModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title" id="assignModalTitle">Add Assignment</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <form id="assignForm">
+                    <input type="hidden" id="editAssignId">
+                    <div class="modal-body">
+                        <div class="mb-3"><label>Title</label><input type="text" class="form-control" id="assignTitle" required></div>
+                        <div class="mb-3"><label>Description</label><textarea class="form-control" id="assignDesc" rows="2" required></textarea></div>
+                        <div class="mb-3"><label>Deadline (Date)</label><input type="date" class="form-control" id="assignDeadline" required></div>
+                        <div class="mb-3"><label>Max Score</label><input type="number" class="form-control" id="assignMaxScore" required min="1"></div>
+                    </div>
+                    <div class="modal-footer"><button type="submit" class="btn btn-warning text-dark">Save Assignment</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="submissionsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Student Submissions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="submissionsList">
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/course.js"></script>
+</body>
+</html>

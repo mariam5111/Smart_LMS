@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Schooly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .brand-logo { font-weight: 800; color: #1e293b; text-decoration: none; font-size: 1.5rem; }
+        .brand-logo span { color: #2563eb; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand brand-logo" href="courses.html">Schooly<span>.</span></a>
+            <div class="d-flex align-items-center">
+                <a href="dashboard.html" class="btn btn-outline-primary btn-sm me-3">My Dashboard</a>
+                <button class="btn btn-outline-danger btn-sm" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold mb-4">Instructor Profile</h3>
+                        <form id="profileForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Bio</label>
+                                <textarea class="form-control" id="profileBio" rows="3" placeholder="Tell students about yourself..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Expertise (comma separated)</label>
+                                <input type="text" class="form-control" id="profileExpertise" placeholder="e.g. JavaScript, Node.js, MongoDB">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Years of Experience</label>
+                                <input type="number" class="form-control" id="profileExperience" min="0">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mt-3">Save Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>
